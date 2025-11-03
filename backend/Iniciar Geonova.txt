@@ -1,0 +1,4 @@
+@echo off
+cd %USERPROFILE%\Desktop\GeoNova
+python -m uvicorn backend.main:app --reload
+pause

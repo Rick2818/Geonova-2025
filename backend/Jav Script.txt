@@ -1,0 +1,105 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("mapCanvas");
+  const ctx = canvas.getContext("2d");
+  let points = [];
+
+  const coordTable = document.getElementById("coordTable");
+  const resultDiv = document.getElementById("result");
+
+  function drawPolygon() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (points.length < 2) return;
+
+    const xs = points.map(p => p.x);
+    const ys = points.map(p => p.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+
+    const margin = 20;
+    const scaleX = (canvas.width - 2 * margin) / (maxX - minX || 1);
+    const scaleY = (canvas.height - 2 * margin) / (maxY - minY || 1);
+    const scale = Math.min(scaleX, scaleY);
+
+    const scaledPoints = points.map(p => ({
+      x: margin + (p.x - minX) * scale,
+      y: canvas.height - (margin + (p.y - minY) * scale)
+    }));
+
+    ctx.beginPath();
+    ctx.moveTo(scaledPoints[0].x, scaledPoints[0].y);
+    for (let i = 1; i < scaledPoints.length; i++) {
+      ctx.lineTo(scaledPoints[i].x, scaledPoints[i].y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = "#00ff00";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = "rgba(0,255,0,0.25)";
+    ctx.fill();
+
+    // Cálculos
+    const area = calculateArea(points);
+    const perimeter = calculatePerimeter(points);
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText(`Área: ${area.toFixed(2)} m²`, 20, 25);
+    ctx.fillText(`Perímetro: ${perimeter.toFixed(2)} m`, 20, 45);
+
+    resultDiv.innerHTML = `Área: ${area.toFixed(2)} m² | Perímetro: ${perimeter.toFixed(2)} m`;
+  }
+
+  function calculateArea(points) {
+    let area = 0;
+    const n = points.length;
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n; // asegura cierre
+      area += points[i].x * points[j].y;
+      area -= points[j].x * points[i].y;
+    }
+    return Math.abs(area / 2);
+  }
+
+  function calculatePerimeter(points) {
+    let perimeter = 0;
+    const n = points.length;
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n; // asegura cierre
+      const dx = points[j].x - points[i].x;
+      const dy = points[j].y - points[i].y;
+      perimeter += Math.sqrt(dx * dx + dy * dy);
+    }
+    return perimeter;
+  }
+
+  document.getElementById("addPoint").addEventListener("click", () => {
+    const x = parseFloat(document.getElementById("xVal").value);
+    const y = parseFloat(document.getElementById("yVal").value);
+    if (isNaN(x) || isNaN(y)) {
+      alert("Por favor, ingresa coordenadas válidas.");
+      return;
+    }
+    points.push({ x, y });
+    const row = document.createElement("tr");
+    row.innerHTML = `<td>${x}</td><td>${y}</td>`;
+    coordTable.appendChild(row);
+    drawPolygon();
+  });
+
+  document.getElementById("calculate").addEventListener("click", () => {
+    if (points.length < 3) {
+      resultDiv.innerHTML = "⚠️ Debes ingresar al menos 3 puntos para calcular.";
+      return;
+    }
+    drawPolygon();
+  });
+
+  document.getElementById("clearAll").addEventListener("click", () => {
+    points = [];
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    coordTable.innerHTML = "<tr><th>X</th><th>Y</th></tr>";
+    resultDiv.innerHTML = "";
+  });
+});
