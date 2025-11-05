@@ -1,23 +1,26 @@
-from fastapi import FastAPI
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
 import os
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
-app = FastAPI(title="GeoNova Stable")
+app = FastAPI()
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
+# 📁 Ruta absoluta al directorio 'static'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "../static")
 
+# 🚀 Monta archivos estáticos (HTML, CSS, JS, imágenes)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+# 🏠 Ruta raíz → devuelve index.html
 @app.get("/")
-def read_index():
+def read_root():
     index_path = os.path.join(STATIC_DIR, "index.html")
-    if not os.path.exists(index_path):
-        return JSONResponse(content={"error": f"index.html no encontrado en {STATIC_DIR}"}, status_code=404)
-    return FileResponse(index_path)
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"error": "index.html no encontrado en /static"}
 
-if __name__ == "__main__":
-    import uvicorn
-    print("✅ GeoNova ejecutándose en http://127.0.0.1:8000")
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)
+# ✅ Prueba de salud (para verificar desde Render o localhost)
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "message": "GeoNova 2025 está corriendo correctamente."}
