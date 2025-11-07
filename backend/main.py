@@ -16,24 +16,12 @@ except Exception as e:
     print("⚠️ Error al listar STATIC_DIR:", e)
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
-
-# 📁 Ruta absoluta al directorio 'static'
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "../static")
-
-# 🚀 Monta archivos estáticos (HTML, CSS, JS, imágenes)
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
-# 🏠 Ruta raíz → devuelve index.html
 @app.get("/")
-def read_root():
+async def serve_index():
     index_path = os.path.join(STATIC_DIR, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {"error": "index.html no encontrado en /static"}
+    if not os.path.exists(index_path):
+        return {"error": "index.html no encontrado en /static"}
+    return FileResponse(index_path)
 
-# ✅ Prueba de salud (para verificar desde Render o localhost)
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "message": "GeoNova 2025 está corriendo correctamente."}
+
+      
