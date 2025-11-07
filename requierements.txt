@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 fastapi==0.115.0
 uvicorn==0.30.6
+=======
+fastapi==0.115.0
+uvicorn==0.30.6
+>>>>>>> ea119c03f5e56eef88d45c67be8943bff19303f6
