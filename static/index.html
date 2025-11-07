@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>GeoNova | Medición Inteligente de Terrenos</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h2>🌎 GeoNova</h2>
+  <p>Ingresa las coordenadas del terreno (en metros):</p>
+
+  <div class="input-container">
+    <input type="number" id="xVal" placeholder="X">
+    <input type="number" id="yVal" placeholder="Y">
+    <button id="addPoint">Agregar Punto</button>
+  </div>
+
+  <table id="coordTable">
+    <tr><th>X</th><th>Y</th></tr>
+  </table>
+
+  <button id="calculate">Calcular Área y Perímetro</button>
+  <div id="result"></div>
+
+  <!-- Aquí está el canvas agregado -->
+  <canvas 
+    id="mapCanvas" 
+    width="600" 
+    height="400" 
+    style="border:1px solid #444; background-color:#1e1e1e; margin-top:15px;">
+  </canvas>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
+
+
